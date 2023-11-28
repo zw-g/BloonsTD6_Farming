@@ -1,3 +1,4 @@
+import subprocess
 import pyautogui
 import time
 import signal
@@ -35,9 +36,9 @@ class GameAutomator:
 
     def play_games(self):
         while self.running:
-            self.total_games += 1
             self.select_game_mode()
             self.setup_monkeys()
+            self.total_games += 1
             success = self.run_game()
             self.finish_game()
             if success:
@@ -47,6 +48,8 @@ class GameAutomator:
     def select_game_mode(self):
         # Logic to select the game mode (starting from home screen)
         # 1. Locate the "BloonsTD6" window (the implementation depends on your OS and setup)
+        subprocess.call(["osascript", "-e",
+                         'tell application "System Events" to tell process "BloonsTD6" to set frontmost to true'])
 
         # 2. Find and click the play button
         location = self.wait_for_image('play_button.png')
