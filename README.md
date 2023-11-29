@@ -1,46 +1,60 @@
 # BloonsTD6_Farming
-A toolkit for automated resource farming in Bloons Tower Defense 6. It utilizes Python with PyAutoGUI and OpenCV for efficient in-game actions and image recognition, streamlining resource gathering.
 
-## Pre-setup Requirements
-Before using the automation script, make sure to configure your environment:
+<p align="center">
+  <img src="./picture/BTD6_main.jpeg" alt="Bloons Tower Defense 6">
+</p>
 
-### Required:
-- **Screen size**: 1280 x 720
-- **Game Mode**: Unlock Expert - RAVINE map's Easy Mode's DEFLATION mode
-- **Hotkeys**: Set to defaults
+## Overview
+BloonsTD6_Farming is a fully automated toolkit designed for resource farming in Bloons Tower Defense 6. This Python-based tool leverages [PyAutoGUI](https://pyautogui.readthedocs.io/en/latest/) and [OpenCV](https://opencv.org/) to perform efficient in-game actions and image recognition, enabling streamlined gathering of monkey money and leveling up for monkey knowledge.
 
-### Recommended:
-- **Sound**: Turn off all sounds in the game
-- **Graphics**: In Accessibility, set FX (effects scale) to off
+**Note**: This toolkit is developed for **macOS only**.
+
+## Credits
+Inspired by the strategy outlined in ["BEST Way To AFK FARM Monkey Money - BTD6"](https://www.youtube.com/watch?v=YCRu2kkXXq4&t=225s) by [GameSteed](https://www.youtube.com/@GameSteed), this tool adapts and enhances the method for improved efficiency and compatibility with the latest version of BTD6.
+
+## Requirements
+- **Python 3.x**: Ensure you have Python 3.x installed. [Python installation tutorial](https://www.python.org/downloads/).
+- **macOS environment**: This toolkit is designed to run on macOS.
+- **Bloons Tower Defense 6 game**: Have the game installed.
+- **Screen resolution**: Set to 1280 x 720.
+- **Game Mode**: Unlock Expert - RAVINE map's Easy Mode's DEFLATION mode.
+- **Hotkeys**: Use default hotkeys in BTD6 for consistency.
+- **Give Permission**: Ensure your Python environment or IDE has the necessary permissions to control your computer. This includes enabling both Accessibility and Screen Recording under the Security & Privacy settings in macOS.
+- **Sound and Graphics** (Optional): Mute game sounds and reduce graphics effects for a smoother experience.
+
+## Installation
+1. Install Git (if not installed) from [git-scm.com](https://git-scm.com/downloads).
+2. Clone the repository: `git clone https://github.com/zw-g/BloonsTD6_Farming.git`.
+3. Install required Python packages: `pip install -r requirements.txt`.
+
+## Usage
+Follow these steps to automate resource farming in BloonsTD6:
+
+1. **Start the Game**: Launch BloonsTD6 and ensure you're on the screen with the "Play" button visible.
+2. **Run the Script**: Execute the `/macOS/main` script from your Python IDE.
+3. **Let It Run**: Sit back and allow the script to automate gameplay. Ensure BloonsTD6 remains the active window.
+4. **Stopping the Script**: To stop the automation, use `Command + C` in your terminal or click the stop button in your IDE.
+
+**Important Note**: After initiating the script, avoid interacting with your computer. The script requires BloonsTD6 to be the focused window and will automatically select it at the start.
 
 ## In-Game Setup
-The script includes a pre-setup that should successfully complete levels. Adjustments can be made in the `setup_monkeys()` method in `main.py` based on your game progress and monkey knowledge.
+This script has a pre-configured setup for DEFLATION mode in BloonsTD6. You can customize the monkey placement and upgrades in the `setup_monkeys(self)` method within `main.py`. If you're unfamiliar with these settings, it's advisable to use the default configuration. Experienced players may wish to experiment with different settings.
 
 ### Modifying Monkeys:
-- **Change Monkey**: `pyautogui.press('k')`
-- **Change Placement**: Modify `x, y` in the script
-- **Upgrade Skills**: Use `,` for path 1, `.` for path 2, `/` for path 3
-- **Number of Upgrades**: Adjust `presses` as needed
+- **Change Monkey**: Use `pyautogui.press('hotkey')` where 'hotkey' is the keyboard shortcut for the desired monkey (e.g., 'k' for Monkey Village).
+- **Change Placement**: Modify the `x, y` coordinates in the script to reposition the monkey.
+- **Upgrade Skills**: Utilize the keys `,`, `.` and `/` for upgrade paths 1, 2, and 3 respectively.
+- **Number of Upgrades**: Alter the `presses` parameter to set the number of skill upgrades.
 
 ```python
+# Example showing how to place the Monkey Village's at x=2830, y=800 and upgrade paths
+# Note: In BTD6, you can only upgrade two paths for each monkey.
 pyautogui.press('k')
 pyautogui.click(x=2830, y=800, clicks=2, interval=0.5)
 pyautogui.press(',', presses=3, interval=0.5)
 pyautogui.press('.', presses=3, interval=0.5)
-pyautogui.press('/', presses=2, interval=0.5)
+pyautogui.press('/', presses=3, interval=0.5)
 ```
 
-## How to Run
-1. Start BloonsTD6 and navigate to the screen with the "Play" button.
-2. Run the script from your Python IDE.
-
-## Downloading and Running the Repository
-1. **Install Git**: Download from [git-scm.com](https://git-scm.com/downloads) if you don't already have it installed.
-2. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/yourusername/BloonsTD6_Farming.git
-   ```
-3. **Run the Script**:
-   - Navigate to the cloned repository folder.
-   - Open the script in your Python IDE.
-   - Run the script as you would run any Python program.
+## Disclaimer
+This tool is intended for educational purposes. Users should employ it responsibly and in accordance with the game's terms of service.

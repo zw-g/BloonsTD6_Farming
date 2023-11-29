@@ -1,9 +1,12 @@
-import subprocess
-import pyautogui
-import time
 import signal
+import subprocess
 import sys
-# opencv-python
+import time
+
+import cv2
+import numpy as np
+import pyautogui
+
 
 class GameAutomator:
     def __init__(self):
@@ -33,6 +36,55 @@ class GameAutomator:
                     return location
             except pyautogui.ImageNotFoundException:
                 pass
+
+    def locate_monkey_award(self, image_filename):
+        # Take a screenshot with PyAutoGUI
+        screenshot = pyautogui.screenshot()
+
+        # Convert the PyAutoGUI Image object to a numpy array, then to OpenCV's BGR format
+        screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
+
+        # Load the image we want to locate
+        target_image = cv2.imread(f'../picture/{image_filename}')
+
+        # Convert to grayscale for template matching
+        screenshot_gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
+        target_gray = cv2.cvtColor(target_image, cv2.COLOR_BGR2GRAY)
+
+        # Perform template matching
+        result = cv2.matchTemplate(screenshot_gray, target_gray, cv2.TM_CCOEFF_NORMED)
+        _, max_val, _, max_loc = cv2.minMaxLoc(result)
+
+        # Check for a good match
+        if max_val > 0.8:
+            # Get the size of the icon image
+            icon_height, icon_width = target_gray.shape[:2]
+            # Calculate the center of the icon
+            center_x = max_loc[0] + icon_width // 2
+            center_y = max_loc[1] + icon_height // 2
+            return (center_x, center_y)  # Return the center coordinates of the icon
+        else:
+            return None
+
+    def get_window_position(self, window_name):
+        script = f'''
+        tell application "System Events" to tell process "{window_name}"
+            set frontmost to true
+            set {{x, y}} to position of window 1
+        end tell
+        '''
+        result = subprocess.run(["osascript", "-e", script], capture_output=True, text=True)
+        if result.stdout:
+            x, y = map(int, result.stdout.strip().split(', '))
+            return x, y
+        return None
+
+    def click_relative_to_window(self, rel_x, rel_y, clicks=1, interval=0.25):
+        window_pos = self.get_window_position('BloonsTD6')
+        if window_pos:
+            x, y = window_pos
+            absolute_x, absolute_y = x + rel_x, y + rel_y
+            pyautogui.click(absolute_x, absolute_y, clicks=clicks, interval=interval)
 
     def play_games(self):
         while self.running:
@@ -87,52 +139,54 @@ class GameAutomator:
     :param presses: Number of times to press the key. Default is 1.
     :param interval: The interval between key presses. Default is 0.25 seconds.
     """
+
     def setup_monkeys(self):
         # Logic to set up monkeys
         # 1. Find and click the ok button
+
         location = self.wait_for_image('deflation_ok_button.png')
         if location: pyautogui.click(location)
         time.sleep(1)
 
         # 2. setup 1st (discount) monkey village
         pyautogui.press('k')
-        pyautogui.click(x=2750, y=800, clicks=2, interval=0.5)
+        self.click_relative_to_window(188, 530, 2, 0.5)
         pyautogui.press('/', presses=2, interval=0.5)
 
         # 3. place & upgrade monkey village, 2 monkey ace, alchemist
         pyautogui.press('k')
-        pyautogui.click(x=2830, y=800, clicks=2, interval=0.5)
+        self.click_relative_to_window(268, 530, 2, 0.5)
         pyautogui.press(',', presses=3, interval=0.5)
         pyautogui.press('.', presses=2, interval=0.5)
 
         pyautogui.press('v')
-        pyautogui.click(x=2750, y=870, clicks=2, interval=0.5)
+        self.click_relative_to_window(188, 600, 2, 0.5)
         pyautogui.press(',', presses=2, interval=0.5)
         pyautogui.press('/', presses=3, interval=0.5)
 
         pyautogui.press('v')
-        pyautogui.click(x=2750, y=927, clicks=2, interval=0.5)
+        self.click_relative_to_window(188, 657, 2, 0.5)
         pyautogui.press(',', presses=2, interval=0.5)
         pyautogui.press('/', presses=3, interval=0.5)
 
         pyautogui.press('f')
-        pyautogui.click(x=2830, y=870, clicks=2, interval=0.5)
+        self.click_relative_to_window(268, 600, 2, 0.5)
         pyautogui.press(',', presses=4, interval=0.5)
         pyautogui.press('/', presses=1, interval=0.5)
 
         # 5. sell 1st (discount) monkey village
-        pyautogui.click(x=2750, y=800)
+        self.click_relative_to_window(188, 526)
         location = self.wait_for_image('sell_button.png')
         if location: pyautogui.click(location)
 
         # 6. place & upgrade bomb shooter, sniper monkey
         pyautogui.press('e')
-        pyautogui.click(x=3029, y=400, clicks=2, interval=0.5)
+        self.click_relative_to_window(467, 126, 2, 0.5)
         pyautogui.press('.', presses=3, interval=0.5)
         pyautogui.press('/', presses=1, interval=0.5)
 
         pyautogui.press('z')
-        pyautogui.click(x=3050, y=840)
+        self.click_relative_to_window(488, 566)
 
     def run_game(self):
         # Run the game and check for popups until the game is complete.
@@ -144,27 +198,54 @@ class GameAutomator:
 
         # 2. Game loop
         while True:
-            if self.wait_for_image('game_success.png', 1):
+            if self.wait_for_image('game_success.png', 0.25):
                 location = self.wait_for_image('victory_next.png')
                 if location: pyautogui.click(location)
                 return True  # Game completed successfully
-            elif self.wait_for_image('game_fail.png', 1):
+
+            elif self.wait_for_image('game_fail.png', 0.25):
                 return False  # Game failed or ended unsuccessfully
 
-            if self.wait_for_image('level_up.png', 1):
-                pyautogui.click(x=3357, y=431)  # Click to dismiss level up popup
+            location = self.wait_for_image('level_up.png', 0.25)
+            if location:
+                pyautogui.click(location)  # Click to dismiss level up popup
 
-            if self.wait_for_image('knowledge_point.png', 1):
-                pyautogui.click(x=3357, y=431)  # Click to dismiss gift popup
+            location = self.wait_for_image('knowledge_point.png', 0.25)
+            if location:
+                pyautogui.click(location)  # Click to dismiss gift popup
 
     def finish_game(self):
+        # ANSI escape code for yellow text
+        YELLOW = '\033[93m'
+        ENDC = '\033[0m'  # ANSI code to end coloring
+
         # Logic to finish the game and return to the home screen
         location = self.wait_for_image('home_button.png')
         if location: pyautogui.click(location)
 
+        while not self.wait_for_image('play_button.png', 0.25):
+            if self.wait_for_image('collection_event.png', 0.25):
+
+                location = self.wait_for_image('collection_event_collect.png')
+                if location: pyautogui.click(location)
+
+                while not self.wait_for_image('monkey_award_continue.png'):
+                    location = self.locate_monkey_award('monkey_award.png')
+                    if location:
+                        pyautogui.click(location, clicks=2, interval=0.75)
+                        print(YELLOW + "monkey_award Clicked at location: " + str(location) + ENDC)
+
+                location = self.wait_for_image('monkey_award_continue.png')
+                if location: pyautogui.click(location)
+
+                location = self.wait_for_image('collection_event_back.png')
+                if location: pyautogui.click(location)
+
+
 def handle_exit(signum, frame):
     automator.stop()  # Call the stop method
     sys.exit(0)  # Exit the program cleanly
+
 
 # set up signal handling
 signal.signal(signal.SIGINT, handle_exit)
