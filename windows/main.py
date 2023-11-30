@@ -7,32 +7,92 @@ import pygetwindow as gw
 
 import utility
 
+# ANSI escape code for colors
+WHITE = '\033[97m'
+RED = '\033[91m'
+PURPLE = '\033[95m'
+BLUE = '\033[94m'
+YELLOW = '\033[93m'
+ENDC = '\033[0m'  # ANSI code to end coloring
 
 class GameAutomator:
     def __init__(self):
         self.running = False
+        self.start_time = None
         self.total_games = 0
         self.successful_games = 0
+        self.level_ups = 0
+        self.monkey_knowledge_earned = 0
+        self.monkeys_earned = 0
 
     def start(self):
         self.running = True
+        self.start_time = time.time()
         self.play_games()
 
     def stop(self):
         self.running = False
+        total_runtime = time.time() - self.start_time
+
+        # Assumptions for simplicity:
+        # 1 year = 365 days
+        # 1 month = 30 days
+        # 1 week = 7 days
+
+        years, remainder = divmod(total_runtime, 31536000)  # 365 * 24 * 60 * 60
+        months, remainder = divmod(remainder, 2592000)  # 30 * 24 * 60 * 60
+        weeks, remainder = divmod(remainder, 604800)  # 7 * 24 * 60 * 60
+        days, remainder = divmod(remainder, 86400)  # 24 * 60 * 60
+        hours, remainder = divmod(remainder, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        # Create the formatted string
+        formatted_runtime = []
+        if years:
+            year_label = "year" if years == 1 else "years"
+            formatted_runtime.append(f"{int(years)} {year_label}")
+        if months:
+            month_label = "month" if months == 1 else "months"
+            formatted_runtime.append(f"{int(months)} {month_label}")
+        if weeks:
+            week_label = "week" if weeks == 1 else "weeks"
+            formatted_runtime.append(f"{int(weeks)} {week_label}")
+        if days:
+            day_label = "day" if days == 1 else "days"
+            formatted_runtime.append(f"{int(days)} {day_label}")
+        if hours:
+            hour_label = "hour" if hours == 1 else "hours"
+            formatted_runtime.append(f"{int(hours)} {hour_label}")
+        if minutes:
+            minute_label = "minute" if minutes == 1 else "minutes"
+            formatted_runtime.append(f"{int(minutes)} {minute_label}")
+        if seconds or not formatted_runtime:
+            second_label = "second" if seconds == 1 else "seconds"
+            formatted_runtime.append(f"{int(seconds)} {second_label}")
+
+        formatted_runtime_str = ', '.join(formatted_runtime)
+
         success_rate = (self.successful_games / self.total_games) * 100 if self.total_games else 0
-        print(f"{self.total_games} games completed with a {success_rate:.2f}% success rate.")
+
+        print(f"⏱️ Number of games: {self.total_games} in {formatted_runtime_str}")
+        print(f"✌️ Success rate: {success_rate:.2f}%")
+        print(f"📈 Level ups: {self.level_ups}")
+        print(f"🏆 Monkey Knowledge Earned: {self.monkey_knowledge_earned}")
+        print(f"🐒 Monkeys Earned: {self.monkeys_earned}")
 
     def play_games(self):
         while self.running:
             self.select_game_mode()
             self.setup_monkeys()
-            self.total_games += 1
             success = self.run_game()
-            self.finish_game()
+            self.total_games += 1
             if success:
                 self.successful_games += 1
-            print(f"Game #{self.total_games} {'succeeded' if success else 'failed'}.")
+                print(YELLOW + f"🎉 Victory o(*^▽^*)┛ {self.successful_games}/{self.total_games}" + ENDC)
+            else:
+                failed_games = self.total_games - self.successful_games
+                print(RED + f"💔 Defeat （；´д｀）ゞ {failed_games}/{self.total_games}" + ENDC)
+            self.finish_game()
 
     def select_game_mode(self):
         # Logic to select the game mode (starting from home screen)
@@ -71,7 +131,7 @@ class GameAutomator:
         location = utility.wait_for_image('deflation_ok_button.png')
         if location: pyautogui.click(location)
 
-        time.sleep(0.5)
+        time.sleep(1)
 
         # 2. setup 1st (discount) monkey village
         utility.press_key('k')
@@ -133,17 +193,17 @@ class GameAutomator:
 
             location = utility.wait_for_image('level_up.png', 0.25)
             if location:
+                self.level_ups += 1
+                print(WHITE + "📈 Level + 1" + ENDC)
                 pyautogui.click(location)  # Click to dismiss level up popup
 
-            location = utility.wait_for_image('knowledge_point.png', 0.25)
-            if location:
-                pyautogui.click(location)  # Click to dismiss gift popup
+                location = utility.wait_for_image('knowledge_point.png')
+                if location:
+                    self.monkey_knowledge_earned += 1
+                    print(PURPLE + "🏆 Monkey Knowledge + 1" + ENDC)
+                    pyautogui.click(location)  # Click to dismiss gift popup
 
     def finish_game(self):
-        # ANSI escape code for yellow text
-        YELLOW = '\033[93m'
-        ENDC = '\033[0m'  # ANSI code to end coloring
-
         # Logic to finish the game and return to the home screen
         location = utility.wait_for_image('home_button.png')
         if location: pyautogui.click(location)
@@ -157,8 +217,9 @@ class GameAutomator:
                 while not utility.wait_for_image('monkey_award_continue.png'):
                     location = utility.locate_monkey_award('monkey_award.png')
                     if location:
+                        self.monkeys_earned += 1
+                        print(BLUE + "🐒 Insta Monkeys + 1" + ENDC)
                         pyautogui.click(location, clicks=2, interval=0.75)
-                        print(YELLOW + "monkey_award Clicked at location: " + str(location) + ENDC)
 
                 location = utility.wait_for_image('monkey_award_continue.png')
                 if location: pyautogui.click(location)
