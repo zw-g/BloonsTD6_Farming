@@ -7,8 +7,6 @@
 ## Overview
 BloonsTD6_Farming is a fully automated toolkit designed for resource farming in Bloons Tower Defense 6. This Python-based tool leverages [PyAutoGUI](https://pyautogui.readthedocs.io/en/latest/) and [OpenCV](https://opencv.org/) to perform efficient in-game actions and image recognition, enabling streamlined gathering of monkey money and leveling up for monkey knowledge.
 
-**Note**: This toolkit is developed for **macOS only**.
-
 ## Credits
 Inspired by the strategy outlined in ["BEST Way To AFK FARM Monkey Money - BTD6"](https://www.youtube.com/watch?v=YCRu2kkXXq4&t=225s) by [GameSteed](https://www.youtube.com/@GameSteed), this tool adapts and enhances the method for improved efficiency and compatibility with the latest version of BTD6.
 
@@ -31,7 +29,7 @@ Inspired by the strategy outlined in ["BEST Way To AFK FARM Monkey Money - BTD6"
 Follow these steps to automate resource farming in BloonsTD6:
 
 1. **Start the Game**: Launch BloonsTD6 and ensure you're on the screen with the "Play" button visible.
-2. **Run the Script**: Execute the `/macOS/main` script from your Python IDE.
+2. **Run the Script**: Execute the `/macOS/main` or `/windows/main` script from your Python IDE.
 3. **Let It Run**: Sit back and allow the script to automate gameplay. Ensure BloonsTD6 remains the active window.
 4. **Stopping the Script**: To stop the automation, use `Command + C` in your terminal or click the stop button in your IDE.
 
