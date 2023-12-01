@@ -36,7 +36,7 @@ Follow these steps to automate resource farming in BloonsTD6:
 
 **Important Note**: After initiating the script, avoid interacting with your computer. The script requires BloonsTD6 to be the focused window and will automatically select it at the start.
 
-## In-Game Setup
+## In-Game Setup (Optional)
 This script has a pre-configured setup for DEFLATION mode in BloonsTD6. You can customize the monkey placement and upgrades in the `setup_monkeys(self)` method within `main.py`. If you're unfamiliar with these settings, it's advisable to use the default configuration. Experienced players may wish to experiment with different settings.
 
 ### Modifying Monkeys:
