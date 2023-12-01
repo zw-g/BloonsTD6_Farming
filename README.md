@@ -16,6 +16,7 @@ Inspired by the strategy outlined in ["BEST Way To AFK FARM Monkey Money - BTD6"
 - **Bloons Tower Defense 6 game**: Have the game installed.
 - **Screen resolution**: Set to 1280 x 720.
 - **Game Mode**: Unlock Expert - RAVINE map's Easy Mode's DEFLATION mode.
+- **Monkey Upgrades**: Unlock Monkey Village 3-2-2, Monkey Ace 2-0-3, Alchemist 4-0-1, and Bomb Shooter 0-3-1.
 - **Hotkeys**: Use default hotkeys in BTD6 for consistency.
 - **Give Permission**: Ensure your Python environment or IDE has the necessary permissions to control your computer. This includes enabling both Accessibility and Screen Recording under the Security & Privacy settings in macOS.
 - **Sound and Graphics** (Optional): Mute game sounds and reduce graphics effects for a smoother experience.
