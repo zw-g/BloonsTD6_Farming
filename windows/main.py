@@ -171,7 +171,7 @@ class GameAutomator:
         utility.press_key('/', 1, 0.5)
 
         utility.press_key('z')
-        utility.click_relative_to_window(488, 566)
+        utility.click_relative_to_window(488, 570)
 
     def run_game(self):
         # Run the game and check for popups until the game is complete.
