@@ -57,3 +57,5 @@ pyautogui.press('/', presses=3, interval=0.5)
 
 ## Disclaimer
 This tool is intended for educational purposes. Users should employ it responsibly and in accordance with the game's terms of service.
+
+[If you like the Software or have any problems with the Software let us know](https://github.com/zw-g/BloonsTD6_Farming/discussions)
