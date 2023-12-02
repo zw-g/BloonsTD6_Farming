@@ -1,0 +1,41 @@
+name: Update README with Clone and View Count Badge
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs at midnight every day
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Fetch clone data
+        id: clones
+        run: |
+          CLONES_COUNT=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/zw-g/BloonsTD6_Farming/traffic/clones | jq '.count')
+          echo "::set-output name=count::$CLONES_COUNT"
+
+      - name: Fetch view data
+        id: views
+        run: |
+          VIEWS_COUNT=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/zw-g/BloonsTD6_Farming/traffic/views | jq '.count')
+          echo "::set-output name=count::$VIEWS_COUNT"
+
+      - name: Update README
+        run: |
+          CLONES_COUNT=${{ steps.clones.outputs.count }}
+          VIEWS_COUNT=${{ steps.views.outputs.count }}
+          # Use awk to insert the badges at the top of README.md, center-aligned
+          awk -v clones="$CLONES_COUNT" -v views="$VIEWS_COUNT" 'BEGIN {print "<p align=\"center\">\n<img src=\"https://img.shields.io/badge/Clones-"clones"-brightgreen\" />\n<img src=\"https://img.shields.io/badge/Views-"views"-blue\" />\n</p>\n"} {print}' README.md > temp_README.md && mv temp_README.md README.md
+
+      - name: Commit and push if changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add README.md
+          git commit -m "Update README with clone and view count badges" || exit 0  # Exit 0 if no changes
+          git push
