@@ -128,6 +128,7 @@ class GameAutomator:
     def setup_monkeys(self):
         # Logic to set up monkeys
         # 1. Find and click the ok button
+
         location = utility.wait_for_image('deflation_ok_button.png')
         if location: pyautogui.click(location)
 
@@ -216,7 +217,12 @@ class GameAutomator:
 
                 while not utility.wait_for_image('monkey_award_continue.png'):
                     location = utility.locate_monkey_award('monkey_award.png')
+                    location1 = utility.locate_monkey_award('monkey_award_01.png')
                     if location:
+                        self.monkeys_earned += 1
+                        print(BLUE + "🐒 Insta Monkeys + 1" + ENDC)
+                        pyautogui.click(location, clicks=2, interval=0.75)
+                    if location1:
                         self.monkeys_earned += 1
                         print(BLUE + "🐒 Insta Monkeys + 1" + ENDC)
                         pyautogui.click(location, clicks=2, interval=0.75)
