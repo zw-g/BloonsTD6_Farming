@@ -1,3 +1,8 @@
+<p align="center">
+<img src="https://img.shields.io/badge/Clones-null-brightgreen" />
+<img src="https://img.shields.io/badge/Views-null-blue" />
+</p>
+
 # BloonsTD6_Farming
 
 <p align="center">
