@@ -2,7 +2,14 @@ name: Update README with Clone and View Count Badge
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Runs at midnight every day
+    - cron: '0 0 * * *'
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - '.github/workflows/update_readme_with_traffic_badges.yml'
+
   workflow_dispatch:
 
 jobs:
@@ -10,28 +17,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Fetch clone data
         id: clones
         run: |
           CLONES_COUNT=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             https://api.github.com/repos/zw-g/BloonsTD6_Farming/traffic/clones | jq '.count')
-          echo "::set-output name=count::$CLONES_COUNT"
+          echo "CLONES_COUNT=$CLONES_COUNT" >> $GITHUB_ENV
 
       - name: Fetch view data
         id: views
         run: |
           VIEWS_COUNT=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             https://api.github.com/repos/zw-g/BloonsTD6_Farming/traffic/views | jq '.count')
-          echo "::set-output name=count::$VIEWS_COUNT"
+          echo "VIEWS_COUNT=$VIEWS_COUNT" >> $GITHUB_ENV
 
       - name: Update README
         run: |
-          CLONES_COUNT=${{ steps.clones.outputs.count }}
-          VIEWS_COUNT=${{ steps.views.outputs.count }}
-          # Use awk to insert the badges at the top of README.md, center-aligned
-          awk -v clones="$CLONES_COUNT" -v views="$VIEWS_COUNT" 'BEGIN {print "<p align=\"center\">\n<img src=\"https://img.shields.io/badge/Clones-"clones"-brightgreen\" />\n<img src=\"https://img.shields.io/badge/Views-"views"-blue\" />\n</p>\n"} {print}' README.md > temp_README.md && mv temp_README.md README.md
+          # Load the environment variables
+          CLONES_COUNT=${{ env.CLONES_COUNT }}
+          VIEWS_COUNT=${{ env.VIEWS_COUNT }}
+          
+          # Check if counts are not null
+          if [ "$CLONES_COUNT" != "null" ] && [ "$VIEWS_COUNT" != "null" ]; then
+            # Use awk to insert the badges at the top of README.md, center-aligned
+            awk -v clones="$CLONES_COUNT" -v views="$VIEWS_COUNT" 'BEGIN {print "<p align=\"center\">\n<img src=\"https://img.shields.io/badge/Clones-"clones"-brightgreen\" />\n<img src=\"https://img.shields.io/badge/Views-"views"-blue\" />\n</p>\n"} {print}' README.md > temp_README.md && mv temp_README.md README.md
+          else
+            echo "Clone or view count is null, skipping badge update."
+          fi
 
       - name: Commit and push if changes
         run: |
