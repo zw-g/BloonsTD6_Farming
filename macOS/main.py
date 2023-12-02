@@ -294,7 +294,12 @@ class GameAutomator:
 
                 while not self.wait_for_image('monkey_award_continue.png'):
                     location = self.locate_monkey_award('monkey_award.png')
+                    location1 = self.locate_monkey_award('monkey_award_01.png')
                     if location:
+                        self.monkeys_earned += 1
+                        print(BLUE + "🐒 Insta Monkeys + 1" + ENDC)
+                        pyautogui.click(location, clicks=2, interval=0.75)
+                    if location1:
                         self.monkeys_earned += 1
                         print(BLUE + "🐒 Insta Monkeys + 1" + ENDC)
                         pyautogui.click(location, clicks=2, interval=0.75)
